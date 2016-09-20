@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import os
 from client import slack_client as sc
 from pytz import utc, timezone
 from datetime import datetime
@@ -7,8 +8,13 @@ from datetime import datetime
 crontable = []
 outputs = []
 
-ALLOWED_CHANNELS = ["bottest",]
-ALLOWED_USERS = ['ben',]
+ALLOWED_CHANNELS = os.environ.get('ALLOWED_CHANNELS', None)
+if ALLOWED_CHANNELS is not None:
+    ALLOWED_CHANNELS = ALLOWED_CHANNELS.strip().split(',')
+ALLOWED_USERS = os.environ.get('ALLOWED_USERS', None)
+if ALLOWED_USERS is not None:
+    ALLOWED_USERS = ALLOWED_USERS.strip().split(',')
+
 USER_STATE = {}
 MY_ID = sc.server.users.find(sc.server.username).id
 MY_IDENT = '<@%s> ' % MY_ID
@@ -45,6 +51,26 @@ class UserState(object):
                 _send_message(self.channel, "<@%s> %s" % (self.user, self.msg,))
 
 
+def getuser(userid):
+    return sc.server.users.find(userid)
+
+
+def getchannel(channelid):
+    return sc.server.channels.find(channelid)
+
+
+def _allowed(userid, channelid):
+    username = getuser(userid).name
+    channelname = getchannel(channelid).name
+
+    if ALLOWED_CHANNELS is not None and channelname not in ALLOWED_CHANNELS:
+        return False
+    if ALLOWED_USERS is not None and username not in ALLOWED_USERS:
+        return False
+
+    return True
+
+
 def _send_message(channel_id, message):
     outputs.append([channel_id, message])
 
@@ -52,14 +78,6 @@ def _send_message(channel_id, message):
 def do_tick():
     for s in USER_STATE.values():
         s.tick()
-
-
-def getuser(userid):
-    return sc.server.users.find(userid)
-
-
-def getchannel(channelid):
-    return sc.server.channels.find(channelid)
 
 
 def slashcommand(user, channel, command):
@@ -85,7 +103,7 @@ def process_message(data):
     username = getuser(userid).name
     channelname = getchannel(channelid).name
 
-    if channelname in ALLOWED_CHANNELS and username in ALLOWED_USERS:
+    if _allowed(userid, channelid):
         msg = data.get('text').strip()
         if msg.startswith(MY_IDENT):
             slashcommand(userid, channelid, msg[MY_IDENT_OFFSET:])
