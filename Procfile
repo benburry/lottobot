@@ -1,0 +1,1 @@
+lottobot: python lottobot.py
