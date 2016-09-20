@@ -13,6 +13,7 @@ def _parse_env_list(var):
     x = os.environ.get(var, None)
     if x is not None:
         x = x.strip().split(',')
+    return x
 
 
 ALLOWED_CHANNELS = _parse_env_list('ALLOWED_CHANNELS')
@@ -66,9 +67,6 @@ def _allowed(userid, channelid):
     global ALLOWED_USERS, ALLOWED_CHANNELS
     username = getuser(userid).name
     channelname = getchannel(channelid).name
-
-    print username, channelname
-    print ALLOWED_USERS, ALLOWED_CHANNELS
 
     if ALLOWED_CHANNELS is not None and channelname not in ALLOWED_CHANNELS:
         return False
