@@ -63,6 +63,7 @@ def getchannel(channelid):
 
 
 def _allowed(userid, channelid):
+    global ALLOWED_USERS, ALLOWED_CHANNELS
     username = getuser(userid).name
     channelname = getchannel(channelid).name
 
