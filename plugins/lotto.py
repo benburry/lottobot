@@ -8,12 +8,15 @@ from datetime import datetime
 crontable = []
 outputs = []
 
-ALLOWED_CHANNELS = os.environ.get('ALLOWED_CHANNELS', None)
-if ALLOWED_CHANNELS is not None:
-    ALLOWED_CHANNELS = ALLOWED_CHANNELS.strip().split(',')
-ALLOWED_USERS = os.environ.get('ALLOWED_USERS', None)
-if ALLOWED_USERS is not None:
-    ALLOWED_USERS = ALLOWED_USERS.strip().split(',')
+
+def _parse_env_list(var):
+    x = os.environ.get(var, None)
+    if x is not None:
+        x = x.strip().split(',')
+
+
+ALLOWED_CHANNELS = _parse_env_list('ALLOWED_CHANNELS')
+ALLOWED_USERS = _parse_env_list('ALLOWED_USERS')
 
 USER_STATE = {}
 MY_ID = sc.server.users.find(sc.server.username).id
