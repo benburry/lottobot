@@ -66,6 +66,9 @@ def _allowed(userid, channelid):
     username = getuser(userid).name
     channelname = getchannel(channelid).name
 
+    print username, channelname
+    print ALLOWED_USERS, ALLOWED_CHANNELS
+
     if ALLOWED_CHANNELS is not None and channelname not in ALLOWED_CHANNELS:
         return False
     if ALLOWED_USERS is not None and username not in ALLOWED_USERS:
@@ -102,9 +105,6 @@ def slashcommand(user, channel, command):
 def process_message(data):
     userid = data.get('user')
     channelid = data.get('channel')
-
-    username = getuser(userid).name
-    channelname = getchannel(channelid).name
 
     if _allowed(userid, channelid):
         msg = data.get('text').strip()
