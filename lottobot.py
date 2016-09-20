@@ -9,7 +9,6 @@ config = {
   'DEBUG': False
 }
 
-sys.path.append(os.path.join(thisdir, 'python-rtmbot'))
 import client
 
 bot = client.init(config)

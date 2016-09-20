@@ -1,2 +1,8 @@
--r python-rtmbot/requirements.txt
+-e git+https://github.com/slackhq/python-rtmbot.git@cccf2b5bc53bbfd35c6c41a71832bf2457e26e00#egg=rtmbot
 pytz
+# from python-rtmbot
+requests
+python-daemon
+pyyaml
+websocket-client
+slackclient
