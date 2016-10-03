@@ -3,8 +3,9 @@ docutils==0.12
 lockfile==0.12.2
 python-daemon==2.1.1
 pytz==2016.6.1
+redis==2.10.5
 requests==2.11.1
--e git+https://github.com/slackhq/python-rtmbot.git@cccf2b5bc53bbfd35c6c41a71832bf2457e26e00#egg=rtmbot-master
+-e git+https://github.com/slackhq/python-rtmbot.git@cccf2b5bc53bbfd35c6c41a71832bf2457e26e00#egg=rtmbot
 six==1.10.0
 slackclient==1.0.1
 websocket-client==0.37.0
