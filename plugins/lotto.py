@@ -74,7 +74,7 @@ class UserState(object):
             if last_spoke is not None:
                 last_spoke = utc.localize(datetime.strptime(last_spoke, cls.CACHE_DATE_FORMAT))
             cls.ACTIVE_USERS[u] = cls(u, userhash['channel'], userhash.get('msg'), last_spoke)
-            #print cls.ACTIVE_USERS[u]
+            print cls.ACTIVE_USERS[u]
 
     def __init__(self, user, channel, msg=None, utc_last_spoke=None):
         self.user = user
@@ -94,13 +94,23 @@ class UserState(object):
 
     def tick(self):
         utc_now = utc.localize(datetime.utcnow())
+        print "Tick", self.user
+        print self.user, "self.utc_last_spoke", self.utc_last_spoke, "utc_now", utc_now, "self._utc_last_tick", self._utc_last_tick
 
         if self._utc_last_tick is not None:
-            tz = getuser(self.user).tz
-            if tz == "unknown":
+            u = getuser(self.user)
+            if u is None:
+                UserState.untrack_user(self.user)
+                return
+
+            print self.user, u
+            tz = u.tz
+            if tz is None or tz == "unknown":
                 zone = utc
             else:
                 zone = timezone(tz)
+
+            print self.user, zone
 
             # hold on to your pants. date maths lies ahead
             local_now = utc_now.astimezone(zone)
@@ -109,8 +119,8 @@ class UserState(object):
             utc_end = zone.localize(datetime.combine(local_now, self.time_end)).astimezone(utc)
             utc_reminder_end = utc_end - timedelta(minutes=15)
 
-            #print utc_now, utc_end, self.utc_last_spoke
-            #print "utc_now > utc_end", utc_now > utc_end, "self._utc_last_tick <= utc_end", self._utc_last_tick <= utc_end
+            print self.user, u.name, "utc_begin", utc_begin, "utc_end", utc_end
+            print self.user, u.name, "utc_now > utc_end", utc_now > utc_end, "self._utc_last_tick <= utc_end", self._utc_last_tick <= utc_end
             if utc_now > utc_reminder_end and self._utc_last_tick <= utc_reminder_end:
                 if self.utc_last_spoke is None \
                     or self.utc_last_spoke < utc_begin \
@@ -121,6 +131,9 @@ class UserState(object):
                     or self.utc_last_spoke < utc_begin \
                     or self.utc_last_spoke > utc_end:
                         _send_message(self.user, self.msg, self.channel)
+
+            print "End tick", self.user, u.name
+            print
 
         self._utc_last_tick = utc_now
 
@@ -159,7 +172,10 @@ def _send_message(user_id, message, channel_id=None):
 
 def do_tick():
     for s in UserState.ACTIVE_USERS.values():
-        s.tick()
+        try:
+            s.tick()
+        except e:
+            print e
 
 
 def slashcommand(user, channel, command):
