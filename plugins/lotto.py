@@ -86,7 +86,7 @@ class UserState(object):
         self.time_begin = time(hour=4, minute=0)
         self.time_end = time(hour=11, minute=15)
 
-    def __str__(self):
+    def __unicode__(self):
         return ', '.join((self.user, self.channel, self.msg, str(self.utc_last_spoke)))
 
     def spoke(self):
