@@ -24,7 +24,7 @@ ALLOWED_CHANNELS = _parse_env_list('ALLOWED_CHANNELS')
 ALLOWED_USERS = _parse_env_list('ALLOWED_USERS')
 
 MY_ID = sc.server.users.find(sc.server.username).id
-MY_IDENT = '<@%s> ' % MY_ID
+MY_IDENT = '<@%s>' % MY_ID
 MY_IDENT_OFFSET = len(MY_IDENT)
 
 
@@ -201,7 +201,8 @@ def process_message(data):
     if _allowed(userid, channelid):
         msg = data.get('text').strip()
         if msg.startswith(MY_IDENT):
-            slashcommand(userid, channelid, msg[MY_IDENT_OFFSET:])
+            msg = msg[MY_IDENT_OFFSET:].lstrip(' :')
+            slashcommand(userid, channelid, msg)
         else:
             user_state = UserState.ACTIVE_USERS.get(userid)
             if user_state is not None:
