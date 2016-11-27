@@ -114,23 +114,25 @@ class UserState(object):
 
             # hold on to your pants. date maths lies ahead
             local_now = utc_now.astimezone(zone)
-            # get the start/end times in the timezone of the user, as utc
-            utc_begin = zone.localize(datetime.combine(local_now, self.time_begin)).astimezone(utc)
-            utc_end = zone.localize(datetime.combine(local_now, self.time_end)).astimezone(utc)
-            utc_reminder_end = utc_end - timedelta(minutes=15)
+            # don't talk on the weekend
+            if local_now.weekday() < 5:
+                # get the start/end times in the timezone of the user, as utc
+                utc_begin = zone.localize(datetime.combine(local_now, self.time_begin)).astimezone(utc)
+                utc_end = zone.localize(datetime.combine(local_now, self.time_end)).astimezone(utc)
+                utc_reminder_end = utc_end - timedelta(minutes=15)
 
-            print self.user, u.name, "utc_begin", utc_begin, "utc_end", utc_end
-            print self.user, u.name, "utc_now > utc_end", utc_now > utc_end, "self._utc_last_tick <= utc_end", self._utc_last_tick <= utc_end
-            if utc_now > utc_reminder_end and self._utc_last_tick <= utc_reminder_end:
-                if self.utc_last_spoke is None \
-                    or self.utc_last_spoke < utc_begin \
-                    or self.utc_last_spoke > utc_reminder_end:
-                        _send_message(self.user, "Remember to submit your lotto in the next 15 minutes")
-            elif utc_now > utc_end and self._utc_last_tick <= utc_end:
-                if self.utc_last_spoke is None \
-                    or self.utc_last_spoke < utc_begin \
-                    or self.utc_last_spoke > utc_end:
-                        _send_message(self.user, self.msg, self.channel)
+                print self.user, u.name, "utc_begin", utc_begin, "utc_end", utc_end
+                print self.user, u.name, "utc_now > utc_end", utc_now > utc_end, "self._utc_last_tick <= utc_end", self._utc_last_tick <= utc_end
+                if utc_now > utc_reminder_end and self._utc_last_tick <= utc_reminder_end:
+                    if self.utc_last_spoke is None \
+                        or self.utc_last_spoke < utc_begin \
+                        or self.utc_last_spoke > utc_reminder_end:
+                            _send_message(self.user, "Remember to submit your lotto in the next 15 minutes")
+                elif utc_now > utc_end and self._utc_last_tick <= utc_end:
+                    if self.utc_last_spoke is None \
+                        or self.utc_last_spoke < utc_begin \
+                        or self.utc_last_spoke > utc_end:
+                            _send_message(self.user, self.msg, self.channel)
 
             print "End tick", self.user, u.name
             print
