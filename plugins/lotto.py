@@ -84,7 +84,7 @@ class UserState(object):
         if utc_last_spoke is not None:
             self.utc_last_spoke = utc_last_spoke
         self.time_begin = time(hour=4, minute=0)
-        self.time_end = time(hour=11, minute=15)
+        self.time_end = time(hour=17, minute=15)
 
     def __unicode__(self):
         return ', '.join((self.user, self.channel, self.msg, str(self.utc_last_spoke)))
